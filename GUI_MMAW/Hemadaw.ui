@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>447</width>
+    <height>171</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Herramienta para extracción masiva de datos wav</string>
+  </property>
+  <widget class="QPushButton" name="seleccionarDirectorio">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>411</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Selecciona el directorio en el que residen los wav</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="seleccionarCSV">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>60</y>
+     <width>411</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Seleccionar el archivo csv que almacenará los datos técnicos</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="iniciarRegistro">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>110</y>
+     <width>191</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Iniciar registro</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cerrarScript">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>110</y>
+     <width>211</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cerrar el script</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
