@@ -8,7 +8,7 @@ import sys
 base = 'Win32GUI' if sys.platform=='win32' else None
 
 executables = [
-    Executable('GUI_MMAW/Ui_Hemadaw.py', base=base, targetName = 'WavData2CSV')
+    Executable('GUI_MMAW/Ui_WHemadaw.py', base=base, targetName = 'WavData2CSV.exe')
 ]
 
 setup(name='Cyanocorax',
