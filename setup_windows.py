@@ -2,10 +2,12 @@ from cx_Freeze import setup, Executable
 
 # Dependencies are automatically detected, but it might need
 # fine tuning.
-buildOptions = dict(packages = [], excludes = [])
+incluirDLL="C:\Python34\Lib\site-packages\PyQt5\libEGL.dll" #esto corrige el problema de carga por fallo en plugin windows... minimal
+buildOptions = dict(packages = [], excludes = [], include_files=[incluirDLL])
 
 import sys
 base = 'Win32GUI' if sys.platform=='win32' else None
+
 
 executables = [
     Executable('GUI_MMAW/Ui_WHemadaw.py', base=base, targetName = 'WavData2CSV.exe')
