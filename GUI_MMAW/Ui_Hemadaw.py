@@ -8,30 +8,37 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore,  QtWidgets
+from collections import namedtuple
 import os, wave,  csv
 
 '''
 Se implementan las funciones que realizaran las operaciones sin intervención de la
 platafroma gráfica
 '''
-
-# Esta función crea una tubla con nombres que contiene las propiedades del archivo
+# Esta función crea una tupla con nombres que contiene las propiedades del archivo
 # y que puede ser usada por la función que escribe los datos al archivo csv
 def propiedadesWav(archivo):
-    from collections import namedtuple
+    archivo=os.path.normpath(archivo)
     nombre=os.path.basename(archivo)
     ubicacion=os.path.dirname(archivo)
+    completo=os.path.normpath(ubicacion+nombre)
+    errores=["Los siguientes archivos no pudieron ser leídos por problemas de formato:"]
     tamanio=os.path.getsize(archivo)
     md5=suma_md5(archivo)
-    w=wave.open(archivo,  'rb')
-    framerate=w.getframerate()
-    sampwidth=w.getsampwidth()
-    nchannels=w.getnchannels()
-    w.close()
-    bitrate=framerate*sampwidth*nchannels
-    duracion=str((tamanio-44)/bitrate).replace(".", ",")
-    _parametros_wav=namedtuple('_parametros_wav','nombre ubicacion tamanio suma_md5 duracion nchannels sampwidth framerate bitrate')
-    return(_parametros_wav(nombre, ubicacion,  tamanio, md5,  duracion,  nchannels, sampwidth, framerate,  bitrate))
+    try:
+        w=wave.open(archivo,  'rb')
+    except wave.Error:
+        errores=errores.append(archivo)
+        return([archivo," no pudo ser procesado por problemas de formato","","","","","","",""])
+    else:	
+        framerate=w.getframerate()
+        sampwidth=w.getsampwidth()
+        nchannels=w.getnchannels()
+        w.close()
+        bitrate=framerate*sampwidth*nchannels
+        duracion=str((tamanio-44)/bitrate).replace(".", ",")
+        _parametros_wav=namedtuple('_parametros_wav','nombre ubicacion tamanio suma_md5 duracion nchannels sampwidth framerate bitrate')
+        return(_parametros_wav(nombre, ubicacion,  tamanio, md5,  duracion,  nchannels, sampwidth, framerate,  bitrate))
     
 #Función para  calcular sumas MD5 
 def suma_md5(archivo):
@@ -45,22 +52,7 @@ def suma_md5(archivo):
      f.close()
      # Mostramos la suma en formato de cadena simple
      return (hash.hexdigest())
-     
-# Esta función toma las variables de directorio de origen y del archivo
-# en donde se van a escribir los datos.
-# Abre o crea el archivo y el objeto de escritura csv
-# como parametro para escribir las columnas utiliza la salida del la 
-# función ordenar datos
-def  datos_a_csv(directorio_origen,  archivo):
-    # el archivo se debe guardar en txt para garantizar que se pueda escoger 
-    # la codificación al abrirlo en excel.
-    aspc=open(archivo,  "w") 
-    # Nombré la variable aspc (archivo separado por comas), para que no se confunda
-    # con el nombre de la clase CSV
-    writer=csv.writer(aspc,  dialect="excel",  quoting=csv.QUOTE_ALL,  delimiter="\t")
-    writer.writerows(ordenar_datos(directorio_origen))
-    aspc.close()
-
+ 
 # Esta función se encarga de buscar recursivamente los archivos wav en el directorio
 # seleccionado y sus subcarpetas
 def buscar_wav_recursivamente(directorio_origen):
@@ -71,15 +63,6 @@ def buscar_wav_recursivamente(directorio_origen):
                 coincidencias.append(os.path.join(root, filename))
     return coincidencias
 
-# esta función examina los datos de cada archivo, extrae sus propiedades
-# y las envía a un arreglo para que sean escritas en el archivo de datos
-def ordenar_datos (directorio_origen):
-    lista=buscar_wav_recursivamente(directorio_origen)
-    rows=[["Nombre",  "Ubicacion",  "Tamaño",  "Suma_md5", "Duración",  "# Canales", "Profundidad de muestreo", "Frecuencia de muestreo", "Tasa de bits"]]
-    for file in lista:
-       rows.append(propiedadesWav(file))
-    return (rows)
-
 '''
 Apartir de este lugar se implementa la plataforma gráfica
 '''
@@ -88,7 +71,7 @@ Apartir de este lugar se implementa la plataforma gráfica
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(447, 190)
+        Form.resize(447, 230)
 
         # Botón para seleccionar el directorio
         self.seleccionarDirectorio = QtWidgets.QPushButton(Form)
@@ -130,15 +113,23 @@ class Ui_Form(object):
         '''''
         self.iniciarRegistro.clicked.connect(self.preProcesar)
         
+
         # Boton para cerrar la ventana
         self.cerrarScript = QtWidgets.QPushButton(Form)
         self.cerrarScript.setGeometry(QtCore.QRect(220, 145, 211, 40))
         self.cerrarScript.setObjectName("cerrarScript")
         
-        # Dialogo de alerta
-        self.alerta=QtWidgets.QMessageBox()
-        self.alerta.setIcon(QtWidgets.QMessageBox.Warning)
- 
+        # Barra de progreso
+        self.progreso = QtWidgets.QProgressBar(Form)     
+        self.progreso.setGeometry(QtCore.QRect(20, 190, 411, 20))
+        self.progreso.setObjectName("progreso")
+        self.progreso.setMinimum(0)
+        self.progreso.hide()
+        
+        # Dialogo de aviso
+        self.aviso=QtWidgets.QMessageBox()
+        self.aviso.setIcon(QtWidgets.QMessageBox.Information)
+        
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -183,19 +174,28 @@ class Ui_Form(object):
     # Directorio de trabajo y el archivo donde se guardará la información
     def preProcesar(self):
         if (self.Directorio==""):
-            self.alerta.setText("No se ha seleccionado ningún directorio")
-            self.alerta.show()
+            self.aviso.setText("No se ha seleccionado ningún directorio")
+            self.aviso.show()
         elif (self.Archivo==""):
-            self.alerta.setText("No se ha seleccionado ningún archivo txt")
-            self.alerta.show()
+            self.aviso.setText("No se ha seleccionado ningún archivo txt")
+            self.aviso.show()
         else:
-            datos_a_csv(self.Directorio,  self.Archivo)
-            self.alerta.setText("La operación ha terminado")
-            self.alerta.show()
-            
-    
-    
-    
+            lista=buscar_wav_recursivamente(self.Directorio)
+            header=["Nombre",  "Ubicacion",  "Tamaño",  "Suma_md5", "Duración",  "# Canales", "Profundidad de muestreo", "Frecuencia de muestreo", "Tasa de bits"]
+            totalArchivos=len(lista)
+            self.progreso.setMaximum(totalArchivos)
+            self.progreso.show()
+            i=0
+            with open(self.Archivo,  'w') as csvfile:
+                writer=csv.writer(csvfile, dialect="excel",  quoting=csv.QUOTE_ALL,  delimiter="\t" )
+                writer.writerow(header)   
+                for archivoWav in lista:
+                    i=i+1
+                    self.progreso.setValue(i)
+                    writer.writerow(propiedadesWav(archivoWav))
+            totalArchivos=str(totalArchivos)
+            self.aviso.setText("La operación ha terminado. Se procesaron "+ totalArchivos+" archivos")
+            self.aviso.show() 
     
 if __name__ == "__main__":
     import sys
@@ -210,4 +210,3 @@ if __name__ == "__main__":
     '''''
     ui.cerrarScript.clicked.connect(Form.close) 
     sys.exit(app.exec_())
-

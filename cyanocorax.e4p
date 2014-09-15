@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric5 project file for project cyanocorax -->
-<!-- Saved: 2014-09-10, 14:24:44 -->
+<!-- Saved: 2014-09-15, 15:19:26 -->
 <!-- Copyright (C) 2014 Grupo de Lingüística de Corpus del Instituto Caro y Cuervo, LingCC@caroycuervo.gov.co -->
 <Project version="5.1">
   <Language></Language>
@@ -12,11 +12,14 @@
   <Version>0.1</Version>
   <Author>Grupo de Lingüística de Corpus del Instituto Caro y Cuervo</Author>
   <Email>LingCC@caroycuervo.gov.co</Email>
+  <Eol index="-1"/>
   <Sources>
     <Source>GUI_MMAW/__init__.py</Source>
     <Source>GUI_MMAW/Ui_Hemadaw.py</Source>
     <Source>__init__.py</Source>
     <Source>setup_linux.py</Source>
+    <Source>GUI_MMAW/Ui_WHemadaw.py</Source>
+    <Source>setup_windows.py</Source>
   </Sources>
   <Forms>
     <Form>GUI_MMAW/Hemadaw.ui</Form>
