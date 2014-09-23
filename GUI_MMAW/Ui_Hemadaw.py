@@ -51,21 +51,6 @@ def suma_md5(archivo):
      # Mostramos la suma en formato de cadena simple
      return (hash.hexdigest())
 
-# Esta función toma las variables de directorio de origen y del archivo
-# en donde se van a escribir los datos.
-# Abre o crea el archivo y el objeto de escritura csv
-# como parametro para escribir las columnas utiliza la salida del la 
-# función ordenar datos
-def  datos_a_csv(directorio_origen,  archivo):
-    # el archivo se debe guardar en txt para garantizar que se pueda escoger 
-    # la codificación al abrirlo en excel.
-    aspc=open(archivo,  "w") 
-    # Nombré la variable aspc (archivo separado por comas), para que no se confunda
-    # con el nombre de la clase CSV
-    writer=csv.writer(aspc,  dialect="excel",  quoting=csv.QUOTE_ALL,  delimiter="\t")
-    writer.writerows(ordenar_datos(directorio_origen))
-    aspc.close()
-
 '''
 Apartir de este lugar se implementa la plataforma gráfica
 '''
@@ -178,14 +163,31 @@ class Ui_Form(object):
                     QtCore.QCoreApplication.processEvents()
         return coincidencias
     
-    # esta función examina los datos de cada archivo, extrae sus propiedades
-    # y las envía a un arreglo para que sean escritas en el archivo de datos
-    def ordenar_datos (lista):
-        rows=[["Nombre",  "Ubicacion",  "Tamaño",  "Suma_md5", "Duración",  "# Canales", "Profundidad de muestreo", "Frecuencia de muestreo", "Tasa de bits"]]
-        for file in lista:
-           rows.append(propiedadesWav(file))
-           
-        return (rows)
+    # Esta función toma las variables de directorio de origen y del archivo
+    # en donde se van a escribir los datos.
+    # Abre o crea el archivo y el objeto de escritura csv
+    # como parametro para escribir las columnas utiliza la salida del la 
+    # función ordenar datos
+    def  datos_a_csv(self,  lista,  archivo):
+        header=["Nombre",  "Ubicacion",  "Tamaño",  "Suma_md5", "Duración",  "# Canales", "Profundidad de muestreo", "Frecuencia de muestreo", "Tasa de bits"]
+        totalArchivos=len(lista)
+        self.progreso.setWindowTitle("Leyendo los wavs")
+        self.progreso.setRange(0, totalArchivos);
+        i=0
+        with open(self.Archivo,  'w') as csvfile:
+            writer=csv.writer(csvfile, dialect="excel",  quoting=csv.QUOTE_ALL,  delimiter="\t" )
+            writer.writerow(header)  
+            for archivoWav in lista:
+                i=i+1
+                self.progreso.setValue(i)
+                writer.writerow(propiedadesWav(archivoWav))
+                self.progreso.setLabelText("Leyendo "+archivoWav)
+                self.progreso.setValue(i)
+                QtCore.QCoreApplication.processEvents()
+        totalArchivos=str(totalArchivos)
+        self.alerta.setText("La operación ha terminado, se leyeron "+totalArchivos+" archivos")
+
+
     
     # Atributos del objeto que recogen los valores arrojados por la selección de
     # directorio y archivo csv
@@ -204,9 +206,8 @@ class Ui_Form(object):
         else:
             self.progreso.show()
             lista=self.buscar_wav_recursivamente(self.Directorio)
+            self.datos_a_csv(lista,  self.Archivo)
             self.progreso.cancel()
-            #datos_a_csv(self.Directorio,  self.Archivo)
-            self.alerta.setText("La operación ha terminado")
             self.alerta.show()
             
     
