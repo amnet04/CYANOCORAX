@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric5 project file for project cyanocorax -->
-<!-- Saved: 2014-09-15, 15:19:26 -->
+<!-- Saved: 2014-09-19, 01:56:02 -->
 <!-- Copyright (C) 2014 Grupo de Lingüística de Corpus del Instituto Caro y Cuervo, LingCC@caroycuervo.gov.co -->
 <Project version="5.1">
   <Language></Language>
@@ -20,6 +20,16 @@
     <Source>setup_linux.py</Source>
     <Source>GUI_MMAW/Ui_WHemadaw.py</Source>
     <Source>setup_windows.py</Source>
+    <Source>cyanocorax_simple/__init__.py</Source>
+    <Source>cyanocorax_simple/controlador/__init__.py</Source>
+    <Source>cyanocorax_simple/modelo/modelo.py</Source>
+    <Source>cyanocorax_simple/modelo/__init__.py</Source>
+    <Source>cyanocorax/Modelo/xmlTeiCorpusICC.py</Source>
+    <Source>cyanocorax/Modelo/teiCorpusICCsubs.py</Source>
+    <Source>cyanocorax/Modelo/xmlTeiCorpusICCsubs.py</Source>
+    <Source>cyanocorax/Modelo/dcrTeiCorpusICC.py</Source>
+    <Source>cyanocorax/Modelo/dcrTeiCorpusICCsubs.py</Source>
+    <Source>cyanocorax/Modelo/teiCorpusICC.py</Source>
   </Sources>
   <Forms>
     <Form>GUI_MMAW/Hemadaw.ui</Form>

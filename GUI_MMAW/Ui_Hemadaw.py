@@ -15,21 +15,19 @@ import os, wave,  csv
 Se implementan las funciones que realizaran las operaciones sin intervención de la
 platafroma gráfica
 '''
+
 # Esta función crea una tupla con nombres que contiene las propiedades del archivo
 # y que puede ser usada por la función que escribe los datos al archivo csv
 def propiedadesWav(archivo):
     archivo=os.path.normpath(archivo)
     nombre=os.path.basename(archivo)
     ubicacion=os.path.dirname(archivo)
-    completo=os.path.normpath(ubicacion+nombre)
-    errores=["Los siguientes archivos no pudieron ser leídos por problemas de formato:"]
     tamanio=os.path.getsize(archivo)
     md5=suma_md5(archivo)
     try:
         w=wave.open(archivo,  'rb')
     except wave.Error:
-        errores=errores.append(archivo)
-        return([archivo," no pudo ser procesado por problemas de formato","","","","","","",""])
+        return([nombre,ubicacion,tamanio,md5,"No pudo ser procesado por problemas de formato","","","",""])
     else:	
         framerate=w.getframerate()
         sampwidth=w.getsampwidth()
@@ -52,16 +50,21 @@ def suma_md5(archivo):
      f.close()
      # Mostramos la suma en formato de cadena simple
      return (hash.hexdigest())
- 
-# Esta función se encarga de buscar recursivamente los archivos wav en el directorio
-# seleccionado y sus subcarpetas
-def buscar_wav_recursivamente(directorio_origen):
-    coincidencias = []
-    for root, dirnames, filenames in os.walk(directorio_origen):
-        for filename in filenames:
-            if filename.endswith(('.wav')):
-                coincidencias.append(os.path.join(root, filename))
-    return coincidencias
+
+# Esta función toma las variables de directorio de origen y del archivo
+# en donde se van a escribir los datos.
+# Abre o crea el archivo y el objeto de escritura csv
+# como parametro para escribir las columnas utiliza la salida del la 
+# función ordenar datos
+def  datos_a_csv(directorio_origen,  archivo):
+    # el archivo se debe guardar en txt para garantizar que se pueda escoger 
+    # la codificación al abrirlo en excel.
+    aspc=open(archivo,  "w") 
+    # Nombré la variable aspc (archivo separado por comas), para que no se confunda
+    # con el nombre de la clase CSV
+    writer=csv.writer(aspc,  dialect="excel",  quoting=csv.QUOTE_ALL,  delimiter="\t")
+    writer.writerows(ordenar_datos(directorio_origen))
+    aspc.close()
 
 '''
 Apartir de este lugar se implementa la plataforma gráfica
@@ -71,7 +74,7 @@ Apartir de este lugar se implementa la plataforma gráfica
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(447, 230)
+        Form.resize(447, 190)
 
         # Botón para seleccionar el directorio
         self.seleccionarDirectorio = QtWidgets.QPushButton(Form)
@@ -113,25 +116,25 @@ class Ui_Form(object):
         '''''
         self.iniciarRegistro.clicked.connect(self.preProcesar)
         
-
         # Boton para cerrar la ventana
         self.cerrarScript = QtWidgets.QPushButton(Form)
         self.cerrarScript.setGeometry(QtCore.QRect(220, 145, 211, 40))
         self.cerrarScript.setObjectName("cerrarScript")
         
-        # Barra de progreso
-        self.progreso = QtWidgets.QProgressBar(Form)     
-        self.progreso.setGeometry(QtCore.QRect(20, 190, 411, 20))
-        self.progreso.setObjectName("progreso")
-        self.progreso.setMinimum(0)
-        self.progreso.hide()
-        
-        # Dialogo de aviso
-        self.aviso=QtWidgets.QMessageBox()
-        self.aviso.setIcon(QtWidgets.QMessageBox.Information)
-        
+        # Dialogo de alerta
+        self.alerta=QtWidgets.QMessageBox()
+        self.alerta.setIcon(QtWidgets.QMessageBox.Warning)
+ 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
+    
+        # Ddialogo de progreso
+        self.progreso=QtWidgets.QProgressDialog()
+        self.progreso.setLabelText("Explorando subdirectorios en busca de wavs")
+        self.progreso.setCancelButtonText("Cancelar")
+        self.progreso.setWindowTitle("Buscando wavs")
+        self.progreso.setRange(0, 0);
+        
 
     # Función que crea los elementos de texto del formulario
     # (Nombres de botones, contenido de rótulos, etc)
@@ -164,6 +167,25 @@ class Ui_Form(object):
             self.rotuloArchivo.setText("No se ha seleccionado ningún archivo para almacenar los datos")
         self.Archivo=archivoCSV[0]
       
+    # Esta función se encarga de buscar recursivamente los archivos wav en el directorio
+    # seleccionado y sus subcarpetas
+    def buscar_wav_recursivamente(self, directorio_origen):
+        coincidencias = []
+        for root, dirnames, filenames in os.walk(directorio_origen):
+            for filename in filenames:
+                if filename.endswith(('.wav')):
+                    coincidencias.append(os.path.join(root, filename))
+                    QtCore.QCoreApplication.processEvents()
+        return coincidencias
+    
+    # esta función examina los datos de cada archivo, extrae sus propiedades
+    # y las envía a un arreglo para que sean escritas en el archivo de datos
+    def ordenar_datos (lista):
+        rows=[["Nombre",  "Ubicacion",  "Tamaño",  "Suma_md5", "Duración",  "# Canales", "Profundidad de muestreo", "Frecuencia de muestreo", "Tasa de bits"]]
+        for file in lista:
+           rows.append(propiedadesWav(file))
+           
+        return (rows)
     
     # Atributos del objeto que recogen los valores arrojados por la selección de
     # directorio y archivo csv
@@ -174,28 +196,22 @@ class Ui_Form(object):
     # Directorio de trabajo y el archivo donde se guardará la información
     def preProcesar(self):
         if (self.Directorio==""):
-            self.aviso.setText("No se ha seleccionado ningún directorio")
-            self.aviso.show()
+            self.alerta.setText("No se ha seleccionado ningún directorio")
+            self.alerta.show()
         elif (self.Archivo==""):
-            self.aviso.setText("No se ha seleccionado ningún archivo txt")
-            self.aviso.show()
+            self.alerta.setText("No se ha seleccionado ningún archivo txt")
+            self.alerta.show()
         else:
-            lista=buscar_wav_recursivamente(self.Directorio)
-            header=["Nombre",  "Ubicacion",  "Tamaño",  "Suma_md5", "Duración",  "# Canales", "Profundidad de muestreo", "Frecuencia de muestreo", "Tasa de bits"]
-            totalArchivos=len(lista)
-            self.progreso.setMaximum(totalArchivos)
             self.progreso.show()
-            i=0
-            with open(self.Archivo,  'w') as csvfile:
-                writer=csv.writer(csvfile, dialect="excel",  quoting=csv.QUOTE_ALL,  delimiter="\t" )
-                writer.writerow(header)   
-                for archivoWav in lista:
-                    i=i+1
-                    self.progreso.setValue(i)
-                    writer.writerow(propiedadesWav(archivoWav))
-            totalArchivos=str(totalArchivos)
-            self.aviso.setText("La operación ha terminado. Se procesaron "+ totalArchivos+" archivos")
-            self.aviso.show() 
+            lista=self.buscar_wav_recursivamente(self.Directorio)
+            self.progreso.cancel()
+            #datos_a_csv(self.Directorio,  self.Archivo)
+            self.alerta.setText("La operación ha terminado")
+            self.alerta.show()
+            
+    
+    
+    
     
 if __name__ == "__main__":
     import sys
