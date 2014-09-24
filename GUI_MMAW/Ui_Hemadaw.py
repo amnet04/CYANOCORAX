@@ -187,7 +187,6 @@ class Ui_Form(object):
         totalArchivos=str(totalArchivos)
         self.alerta.setText("La operación ha terminado, se leyeron "+totalArchivos+" archivos")
 
-
     
     # Atributos del objeto que recogen los valores arrojados por la selección de
     # directorio y archivo csv
@@ -206,14 +205,11 @@ class Ui_Form(object):
         else:
             self.progreso.show()
             lista=self.buscar_wav_recursivamente(self.Directorio)
-            self.datos_a_csv(lista,  self.Archivo)
             self.progreso.cancel()
+            self.progreso.show()
+            self.datos_a_csv(lista,  self.Archivo)
             self.alerta.show()
-            
-    
-    
-    
-    
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
