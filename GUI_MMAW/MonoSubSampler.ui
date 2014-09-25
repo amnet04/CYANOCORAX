@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>490</width>
+    <height>349</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Manipulación e inventariado masivo de archivos wav</string>
+  </property>
+  <widget class="QPushButton" name="seleccionarDirectorioOrigen">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>451</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Selecciona el directorio en el que residen los wav</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="iniciarProceso">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>290</y>
+     <width>211</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Iniciar proceso</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cerrarScript">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>290</y>
+     <width>231</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cerrar el script</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="convertirMono">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>150</y>
+     <width>451</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Convertir a mono</string>
+   </property>
+   <widget class="QRadioButton" name="canalDerecho">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Canal derecho</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="canalIzquierdo">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>20</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Canal izquierdo</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="canalesSeparados">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Archivo para cada canal</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="canalesPromediados">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>20</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Promediar canales</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="canalesPromediadosSeparados">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>50</y>
+      <width>251</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Archivo por cada canal y promedio</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="resamplear">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>230</y>
+     <width>451</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Resamplear (decimar)</string>
+   </property>
+   <widget class="QRadioButton" name="decimacion2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>211</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reducir muestreo a la mitad</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="decimacion4">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>30</y>
+      <width>211</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reducir muestreo a un cuarto</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>80</y>
+     <width>451</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Seleccionar el directorio de destino</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="directorioOrigen">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>50</y>
+     <width>451</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Directorio seleccionado: </string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="directorioDestino">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>120</y>
+     <width>451</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Directorio seleccionado: </string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
